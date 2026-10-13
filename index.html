@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milk Tea POS</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold">🧋 Milk Tea POS</h1>
+    <span id="txn-label" class="text-sm text-slate-300">Transaction: TXN-0001</span>
+  </header>
+
+  <!-- Main: three columns -->
+  <main class="grid grid-cols-3 gap-4 p-4">
+
+    <!-- ============ Column 1: Products ============ -->
+    <section class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-lg font-semibold mb-3 border-b pb-2">Products</h2>
+      <div id="product-list" class="space-y-2">
+        <!-- Product cards rendered by app.js -->
+      </div>
+    </section>
+
+    <!-- ============ Column 2: Cart / Order Summary ============ -->
+    <section class="bg-white rounded-lg shadow p-4 flex flex-col">
+      <h2 class="text-lg font-semibold mb-3 border-b pb-2">Order Summary</h2>
+      <div id="cart-empty-msg" class="text-slate-400 text-center py-8">
+        Cart is empty — add products to begin.
+      </div>
+      <div id="cart-list" class="space-y-2 hidden">
+        <!-- Cart rows rendered by app.js -->
+      </div>
+      <div class="mt-auto pt-4 border-t mt-4">
+        <div class="flex justify-between text-lg font-bold">
+          <span>Total:</span>
+          <span id="cart-total">₱0.00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Column 3: Payment + Confirmation + Receipt ============ -->
+    <section class="bg-white rounded-lg shadow p-4 flex flex-col gap-4">
+      <div id="payment-section">
+        <h2 class="text-lg font-semibold mb-3 border-b pb-2">Payment</h2>
+
+        <!-- Status messages -->
+        <div id="payment-error" class="hidden bg-red-100 text-red-600 rounded p-2 mb-2 text-sm"></div>
+        <div id="payment-success" class="hidden bg-green-100 text-green-700 rounded p-2 mb-2 text-sm"></div>
+
+        <label class="block text-sm font-medium mb-1" for="cash-input">Cash received (₱)</label>
+        <input
+          id="cash-input"
+          type="text"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="0.00"
+          class="w-full border rounded p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
+        <div id="change-preview" class="text-sm text-slate-500 mb-2">
+          Change: ₱0.00
+        </div>
+
+        <button
+          id="pay-btn"
+          class="w-full bg-blue-600 text-white rounded p-2 font-semibold hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed">
+          Pay
+        </button>
+      </div>
+
+      <!-- Receipt panel (hidden until payment confirmed) -->
+      <div id="receipt-section" class="hidden">
+        <h2 class="text-lg font-semibold mb-3 border-b pb-2">Receipt</h2>
+        <div id="receipt-content" class="bg-slate-50 border rounded p-3 text-sm font-mono whitespace-pre-line"></div>
+        <button
+          id="new-txn-btn"
+          class="w-full mt-3 bg-green-600 text-white rounded p-2 font-semibold hover:bg-green-700">
+          New Transaction
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
