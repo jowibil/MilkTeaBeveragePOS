@@ -56,12 +56,17 @@ function findByID(id) {
  * onerror swaps the image for a neutral placeholder (gray block with the
  * product's initial) so a missing file never shows a broken icon.
  */
-function createThumb(product, sizeClasses) {
+function createThumb(product, sizeClasses, fit) {
   const img = document.createElement("img");
   img.src = product.image;
   img.alt = product.name;
   img.loading = "lazy";
-  img.className = sizeClasses + " object-cover bg-amber-100";
+  // fit="contain" letterboxes empty space around the photo (for preview
+  // boxes that may mismatch it). Product cards use fit="cover" with a box
+  // that follows the photo's natural aspect ratio — full image, no blank
+  // side bars, and the card height adapts to the photo.
+  img.className =
+    sizeClasses + " object-" + (fit || "contain") + " bg-amber-100";
   img.onerror = () => {
     const fallback = document.createElement("div");
     fallback.className =
@@ -74,6 +79,21 @@ function createThumb(product, sizeClasses) {
 }
 
 /* ============================== 4. Toast ============================= */
+
+/**
+ * Product-photo preview modal: opens the drink image in the reusable dialog.
+ * The card shrink-wraps to the image's own aspect ratio (see openModal image
+ * mode) and is viewport-capped, so it stays responsive on any screen.
+ */
+function requestProductPreview(product) {
+  openModal({
+    title: product.name,
+    image: { src: product.image, alt: product.name },
+    bodyText: formatMoney(product.price) + " — press the card's Add to Cart button to order",
+    dismissible: true,
+    actions: [{ label: "Close", variant: "secondary" }],
+  });
+}
 
 /** Show a brief success toast that auto-dismisses after about 2 seconds. */
 function showToast(message) {
@@ -102,6 +122,15 @@ const modalCloseBtn = document.getElementById("modal-close");
 let modalDismissible = false;   // payment-success / receipt modals close only via buttons
 let modalTriggerElement = null; // element to restore focus to on close
 
+/* Base card classes applied on every open — sizing differs per mode. */
+const CARD_BASE =
+  "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl outline-none";
+// Text dialogs (confirmations, errors, receipt): comfortable fixed reading width.
+const CARD_TEXT_SIZING = "w-[92%] max-w-md p-5";
+// Image mode: the card shrink-wraps to the image's own aspect ratio, capped so
+// it always fits the viewport (responsive — no overflow, grid unaffected).
+const CARD_IMAGE_SIZING = "w-auto max-w-[92vw] p-3 sm:p-5";
+
 const BUTTON_VARIANTS = {
   primary:
     "bg-amber-700 text-amber-50 hover:bg-amber-800 active:bg-amber-900 focus:ring-amber-700",
@@ -125,11 +154,39 @@ function openModal(cfg) {
   modalTriggerElement = document.activeElement;
   modalDismissible = cfg.dismissible !== false;
 
+  // Pick the card sizing for this open: fixed reading width for plain
+  // dialogs, shrink-wrap-to-image for image content (still viewport-capped).
+  modalCard.className = CARD_BASE + " " + (cfg.image ? CARD_IMAGE_SIZING : CARD_TEXT_SIZING);
+
   modalTitleEl.textContent = cfg.title;
 
-  // Body: accept a prepared DOM node (receipt <pre>, summary list) or plain text.
+  // Body: a prepared DOM node (receipt <pre>, summary list), an image
+  // (dynamically sized from its natural aspect ratio), or plain text.
   while (modalBodyEl.firstChild) modalBodyEl.removeChild(modalBodyEl.firstChild);
-  if (cfg.body) {
+  if (cfg.image) {
+    const img = document.createElement("img");
+    img.src = cfg.image.src;
+    img.alt = cfg.image.alt || cfg.title;
+    img.className =
+      "block mx-auto h-auto w-auto max-h-[68svh] max-w-full rounded-lg bg-amber-100 object-contain";
+    img.onerror = () => {
+      const fallback = document.createElement("div");
+      fallback.className =
+        "mx-auto bg-slate-200 rounded-lg flex items-center justify-center " +
+        "font-bold text-6xl text-slate-500";
+      fallback.style.width = "240px";
+      fallback.style.height = "240px";
+      fallback.textContent = (cfg.image.alt || "?").charAt(0);
+      img.replaceWith(fallback);
+    };
+    modalBodyEl.appendChild(img);
+    if (cfg.bodyText) {
+      const caption = document.createElement("p");
+      caption.className = "text-center text-slate-500";
+      caption.textContent = cfg.bodyText;
+      modalBodyEl.appendChild(caption);
+    }
+  } else if (cfg.body) {
     modalBodyEl.appendChild(cfg.body);
   } else if (cfg.bodyText) {
     modalBodyEl.textContent = cfg.bodyText;
@@ -407,7 +464,15 @@ function renderProducts() {
       "flex flex-col bg-white border border-amber-100 rounded-xl p-3 shadow-sm " +
       "hover:shadow-md hover:border-amber-300 transition";
 
-    card.appendChild(createThumb(product, "w-full h-40 rounded-lg"));
+    // Photo is clickable: opens it enlarged in a dynamically sized modal.
+    const thumbBtn = document.createElement("button");
+    thumbBtn.className =
+      "block w-full rounded-lg cursor-pointer focus:outline-none " +
+      "focus:ring-2 focus:ring-amber-700 focus:ring-offset-2";
+    thumbBtn.title = "View " + product.name + " photo";
+    thumbBtn.onclick = () => requestProductPreview(product);
+    thumbBtn.appendChild(createThumb(product, "w-full h-auto rounded-lg", "cover"));
+    card.appendChild(thumbBtn);
 
     const name = document.createElement("div");
     name.className = "mt-2 font-medium text-sm leading-snug";
@@ -442,7 +507,8 @@ function cartRow(item) {
   const row = document.createElement("div");
   row.className = "flex items-center gap-2 border border-amber-100 rounded-lg p-2";
 
-  row.appendChild(createThumb(item, "w-12 h-12 rounded-md shrink-0"));
+  // fit="cover" here: a small square avatar; slight crop beats side letterbox.
+  row.appendChild(createThumb(item, "w-12 h-12 rounded-md shrink-0", "cover"));
 
   const info = document.createElement("div");
   info.className = "min-w-0 flex-1";

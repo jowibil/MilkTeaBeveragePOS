@@ -210,6 +210,16 @@ async function main() {
     JSON.stringify(value && value[0])
   );
 
+  /* --- 1b. Dynamic cards: image box follows the photo's aspect ratio --- */
+  value = await evaluate(
+    "[...document.querySelectorAll('#product-list img')].map(img => {" +
+      "const box = img.getBoundingClientRect();" +
+      "const na = img.naturalWidth / img.naturalHeight;" +
+      "return Math.abs(na - box.width / box.height) < 0.03;})" +
+      ".every(Boolean)"
+  );
+  check("card image boxes match photo ratios (no blank side bars)", value === true);
+
   /* --- 2. Empty cart --- */
   check("payment disabled when cart is empty", (await evaluate("document.getElementById('pay-btn').disabled")) === true);
   check("empty-cart state visible", (await evaluate("document.getElementById('cart-empty-msg').classList.contains('hidden')")) === false);
@@ -426,6 +436,37 @@ async function main() {
    * Same expectations as before: 1 column on phones, 2 on tablets, 3 on
    * desktop; desktop product panel spans 2 of the 3 tracks.
    */
+  /* --- 13. Dynamic image-preview modal --- */
+  const gridBefore = await evaluate(
+    "getComputedStyle(document.querySelector('main')).gridTemplateColumns"
+  );
+  await evaluate(
+    "(() => { const im = document.querySelector('#product-list img'); im.closest('button').click(); return 'ok'; })()"
+  );
+  check("product image opens preview modal", (await modalIsOpen()) === true);
+  const previewTitle = await evaluate("document.getElementById('modal-title').textContent");
+  check("preview title is the product name", /Classic Milk Tea/.test(previewTitle), previewTitle);
+  value = await evaluate(
+    "const im = document.querySelector('#modal-card img');" +
+      "im && im.complete && im.naturalWidth > 0"
+  );
+  check("preview modal shows the drink image", value === true);
+  value = await evaluate(
+    "(() => { const im = document.querySelector('#modal-card img'); const r = im.getBoundingClientRect();" +
+      "const na = im.naturalWidth / im.naturalHeight; const sh = r.width / r.height;" +
+      "return Math.abs(na - sh) < 0.03 ? 'ok' : 'natural ' + na.toFixed(3) + ' vs shown ' + sh.toFixed(3); })()"
+  );
+  check("modal matches the image's aspect ratio (dynamic sizing)", value === "ok", value);
+  value = await evaluate("document.documentElement.scrollWidth <= window.innerWidth + 0.5");
+  check("no horizontal overflow while preview open (desktop)", value === true);
+  await pressEscape();
+  check("Escape closes the image preview", (await modalIsOpen()) === false);
+  const gridAfter = await evaluate(
+    "getComputedStyle(document.querySelector('main')).gridTemplateColumns"
+  );
+  check("product grid intact after image modal closes", gridAfter === gridBefore, gridBefore + " -> " + gridAfter);
+
+  /* --- 14. Responsive layout (mobile-first) --- */
   await send("Page.enable");
   const gridTracks = "getComputedStyle(document.querySelector('main')).gridTemplateColumns";
 
@@ -439,6 +480,18 @@ async function main() {
   await clickProduct(0);
   value = await evaluate("getComputedStyle(document.querySelector('button[title=\"Increase quantity\"]')).width");
   check("phone: +/− buttons enlarged to 40px", value === "40px", value);
+
+  await evaluate(
+    "(() => { const im = document.querySelector('#product-list img'); im.closest('button').click(); return 'ok'; })()"
+  );
+  value = await evaluate(
+    "(() => { const r = document.getElementById('modal-card').getBoundingClientRect();" +
+      "return r.left >= -0.5 && r.right <= window.innerWidth + 0.5 ? 'ok' : 'card ' + Math.round(r.left) + '..' + Math.round(r.right) + ' vw ' + window.innerWidth; })()"
+  );
+  check("phone: image modal fits the viewport width", value === "ok", value);
+  value = await evaluate("document.documentElement.scrollWidth <= window.innerWidth + 0.5");
+  check("phone: no horizontal scroll with image modal open", value === true);
+  await pressEscape();
 
   await send("Emulation.setDeviceMetricsOverride", { width: 800, height: 800, deviceScaleFactor: 1, mobile: false });
   await send("Page.reload");

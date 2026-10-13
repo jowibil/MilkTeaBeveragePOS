@@ -37,7 +37,10 @@ python -m http.server 8000
   focus move/restore, scroll lock) for: remove-item and clear-cart
   confirmations, payment errors (blank / non-numeric / negative /
   insufficient, with the short amount shown), payment confirmation, digital
-  receipt, and discard-order confirmation. Escape / backdrop / close button
+  receipt, and discard-order confirmation. Clicking a product photo opens an
+  **image preview modal that dynamically sizes itself to the image's own
+  aspect ratio** (viewport-capped, inside the 92% width / 68vh limits) so the
+  drink is shown full-frame on any screen. Escape / backdrop / close button
   dismiss every modal except payment confirmation and receipt, which close
   only via their buttons.
 - **Mobile-first responsive layout** — one column on phones, two columns on
