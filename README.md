@@ -77,7 +77,10 @@ python -m http.server 8000
 | Taro Milk Tea (Regular)          | ₱65.00 |
 | Fruit Tea — Lychee (Regular)     | ₱55.00 |
 | Brown Sugar Milk Tea (Regular)   | ₱69.00 |
-| Bottled Water                    | ₱20.00 |
+| Bottled Water¹                   | ₱20.00 |
+
+¹ The catalog name stays "Bottled Water" in the POS; it is shown with the
+Essentia®-brand bottle photo (see [Sporked's best bottled water review](https://sporked.com/article/best-bottled-water/), where Essentia is a featured pick).
 
 ## Image Credits
 
@@ -90,4 +93,4 @@ Photos from [Wikimedia Commons](https://commons.wikimedia.org/) (free licenses):
 | `taro-milk-tea.jpg` | [Taro flavored milk tea](https://commons.wikimedia.org/wiki/File:Taro_flavored_milk_tea.jpg) by Fumikas Sagisavas, CC0 |
 | `lychee-fruit-tea.jpg` | [Lychee with basil seame cold drink from thailand](https://commons.wikimedia.org/wiki/File:Lychee_with_basil_seame_cold_drink_from_thailand.jpg) by Peachyeung316, CC BY-SA 4.0 |
 | `brown-sugar-milk-tea.jpg` | [Brown sugar boba tea at Boba Heaven, downtown Evanston, IL](https://commons.wikimedia.org/wiki/File:Brown_sugar_boba_tea_at_Boba_Heaven,_downtown_Evanston,_IL.jpg) by ~delta, CC BY-SA 4.0 |
-| `bottled-water.jpg` | [PET Bottle Water](https://commons.wikimedia.org/wiki/File:PET_Bottle_Water.jpg) by Ravitave, CC BY-SA 4.0 |
+| `bottled-water.jpg` | [Essentia Water bottle](https://commons.wikimedia.org/wiki/File:Essentia_Water_bottle.jpg) by Cdan198, CC BY-SA 4.0 (the brand featured in [Sporked's best bottled water review](https://sporked.com/article/best-bottled-water/)) |

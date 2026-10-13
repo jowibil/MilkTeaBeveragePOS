@@ -27,11 +27,14 @@ const DRINKS = [
   { file: "classic-milk-tea.jpg", terms: ["classic bubble tea", "milk tea tapioca pearls", "bubble tea cup"] },
   { file: "wintermelon-milk-tea.jpg", terms: ["wintermelon milk tea", "winter melon tea", "green milk tea"] },
   { file: "taro-milk-tea.jpg", terms: ["taro milk tea", "taro bubble tea", "purple bubble tea"] },
-  // Pinned: search picks were cluttered; these exact files are clean shots.
+  // Pinned: search picks were cluttered/wrong-brand; these exact files are
+  // clean shots (the water slot shows the Essentia brand bottle, per the
+  // product the shop sells — see the Sporked "best bottled water" review
+  // that highlights Essentia).
   { file: "lychee-fruit-tea.jpg", pinnedTitle: "File:Lychee with basil seame cold drink from thailand.jpg",
     terms: ["lychee juice glass", "lychee drink", "lychee juice"] },
   { file: "brown-sugar-milk-tea.jpg", terms: ["brown sugar boba", "brown sugar bubble tea"] },
-  { file: "bottled-water.jpg", pinnedTitle: "File:PET Bottle Water.jpg",
+  { file: "bottled-water.jpg", pinnedTitle: "File:Essentia Water bottle.jpg",
     terms: ["plastic water bottle drinking water", "water bottle plastic", "bottled water"] },
 ];
 
