@@ -170,8 +170,8 @@ function renderProducts() {
   for (const product of PRODUCTS) {
     const card = document.createElement("button");
     card.className =
-      "w-full text-left border rounded p-3 hover:bg-blue-50 hover:border-blue-400 " +
-      "flex justify-between items-center gap-2 cursor-pointer";
+      "w-full min-h-[52px] text-left border rounded p-3 hover:bg-blue-50 hover:border-blue-400 " +
+      "active:bg-blue-100 flex justify-between items-center gap-2 cursor-pointer";
     card.onclick = () => addToCart(product.id);
 
     const name = document.createElement("span");
@@ -213,7 +213,9 @@ function cartRow(item) {
 
   const minus = document.createElement("button");
   minus.textContent = "−";
-  minus.className = "w-7 h-7 rounded bg-slate-200 hover:bg-slate-300 font-bold cursor-pointer";
+  minus.className =
+    "w-10 h-10 sm:w-7 sm:h-7 rounded bg-slate-200 hover:bg-slate-300 active:bg-slate-400 " +
+    "font-bold text-lg sm:text-sm cursor-pointer";
   minus.title = "Decrease quantity (min 1)";
   minus.onclick = () => decreaseQty(item.id);
 
@@ -223,14 +225,16 @@ function cartRow(item) {
 
   const plus = document.createElement("button");
   plus.textContent = "+";
-  plus.className = "w-7 h-7 rounded bg-slate-200 hover:bg-slate-300 font-bold cursor-pointer";
+  plus.className =
+    "w-10 h-10 sm:w-7 sm:h-7 rounded bg-slate-200 hover:bg-slate-300 active:bg-slate-400 " +
+    "font-bold text-lg sm:text-sm cursor-pointer";
   plus.title = "Increase quantity";
   plus.onclick = () => increaseQty(item.id);
 
   const remove = document.createElement("button");
   remove.textContent = "Remove";
   remove.className =
-    "ml-2 text-xs text-red-600 hover:text-red-800 hover:underline cursor-pointer";
+    "ml-2 py-2 px-1 text-xs text-red-600 hover:text-red-800 hover:underline cursor-pointer";
   remove.onclick = () => removeFromCart(item.id);
 
   controls.appendChild(minus);

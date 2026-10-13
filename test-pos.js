@@ -327,6 +327,61 @@ async function main() {
     overpayReceipt.split("\n").join(" | ")
   );
 
+  /* --- 11. Mobile-first responsive smoke test --- *
+   * Resize the page through CDP and assert the CSS grid tracks:
+   *   390px (phone)  → 1 column
+   *   800px (tablet) → 2 columns (products span 2 rows in the left column)
+   *   1280px (desktop) → 3 columns
+   * Also confirm the enlargened touch targets h-11 (44px) apply on mobile.
+   */
+  await send("Page.enable");
+  const gridTracks = "getComputedStyle(document.querySelector('main')).gridTemplateColumns";
+
+  await send("Emulation.setDeviceMetricsOverride", {
+    width: 390, height: 844, deviceScaleFactor: 1, mobile: true,
+  });
+  await send("Page.reload");
+  await waitFor("document.readyState === 'complete' && document.querySelectorAll('#product-list > button').length >= 5");
+  const mobileTracks = (await evaluate(gridTracks)).trim().split(/\s+/);
+  check("phone (390px): single-column stack", mobileTracks.length === 1, "tracks=" + JSON.stringify(mobileTracks));
+  const payHeight = await evaluate(
+    "getComputedStyle(document.getElementById('pay-btn')).height"
+  );
+  check("phone: Pay button meets 44px touch target", payHeight === "44px", "height=" + payHeight);
+  await clickProduct(0); // add an item so qty buttons exist in the cart row
+  const plusSize = await evaluate(
+    "const b = document.querySelector('button[title=\"Increase quantity\"]');" +
+      "getComputedStyle(b).width"
+  );
+  check("phone: +/− buttons enlarged to 40px", plusSize === "40px", "size=" + plusSize);
+
+  await send("Emulation.setDeviceMetricsOverride", {
+    width: 800, height: 800, deviceScaleFactor: 1, mobile: false,
+  });
+  await send("Page.reload");
+  await waitFor("document.readyState === 'complete' && document.querySelectorAll('#product-list > button').length >= 5");
+  await clickProduct(0); // add an item; qty buttons should be compact at tablet+ widths
+  const tabletTracks = (await evaluate(gridTracks)).trim().split(/\s+/);
+  check("tablet (800px): two columns", tabletTracks.length === 2, "tracks=" + JSON.stringify(tabletTracks));
+  const compactPlus = await evaluate(
+    "const b = document.querySelector('button[title=\"Increase quantity\"]');" +
+      "getComputedStyle(b).width"
+  );
+  check("tablet: qty buttons back to compact 28px", compactPlus === "28px", "size=" + compactPlus);
+
+  await send("Emulation.setDeviceMetricsOverride", {
+    width: 1280, height: 800, deviceScaleFactor: 1, mobile: false,
+  });
+  await send("Page.reload");
+  await waitFor("document.readyState === 'complete' && document.querySelectorAll('#product-list > button').length >= 5");
+  const desktopTracks = (await evaluate(gridTracks)).trim().split(/\s+/);
+  check("desktop (1280px): three columns", desktopTracks.length === 3, "tracks=" + JSON.stringify(desktopTracks));
+
+  // Restore the default desktop viewport and start a clean state.
+  await send("Emulation.setDeviceMetricsOverride", {
+    width: 1280, height: 800, deviceScaleFactor: 1, mobile: false,
+  });
+
   /* --------------------------- summary --------------------------- */
   console.log("\n" + passCount + " passed, " + failCount + " failed");
   process.exitCode = failCount === 0 ? 0 : 1;

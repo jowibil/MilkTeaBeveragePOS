@@ -10,16 +10,17 @@
 <body class="bg-slate-100 min-h-screen">
 
   <!-- Header -->
-  <header class="bg-slate-800 text-white px-6 py-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold">🧋 Milk Tea POS</h1>
-    <span id="txn-label" class="text-sm text-slate-300">Transaction: TXN-0001</span>
+  <header class="bg-slate-800 text-white px-4 py-3 sm:px-6 sm:py-4 flex flex-wrap items-center justify-between gap-2">
+    <h1 class="text-lg sm:text-xl font-bold">🧋 Milk Tea POS</h1>
+    <span id="txn-label" class="text-xs sm:text-sm text-slate-300">Transaction: TXN-0001</span>
   </header>
 
-  <!-- Main: three columns -->
-  <main class="grid grid-cols-3 gap-4 p-4">
+  <!-- Main: mobile-first — one column on phones, two on md, three on lg -->
+  <main class="grid grid-cols-1 gap-4 p-3 sm:p-4 md:grid-cols-2 lg:grid-cols-3">
 
     <!-- ============ Column 1: Products ============ -->
-    <section class="bg-white rounded-lg shadow p-4">
+    <!-- md: products fill the left column across both rows; lg returns to plain 3-col flow -->
+    <section class="bg-white rounded-lg shadow p-4 md:row-span-2 lg:row-span-1">
       <h2 class="text-lg font-semibold mb-3 border-b pb-2">Products</h2>
       <div id="product-list" class="space-y-2">
         <!-- Product cards rendered by app.js -->
@@ -59,7 +60,7 @@
           inputmode="decimal"
           autocomplete="off"
           placeholder="0.00"
-          class="w-full border rounded p-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          class="w-full text-base border rounded p-2 sm:p-2.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
 
         <div id="change-preview" class="text-sm text-slate-500 mb-2">
           Change: ₱0.00
@@ -67,7 +68,7 @@
 
         <button
           id="pay-btn"
-          class="w-full bg-blue-600 text-white rounded p-2 font-semibold hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed">
+          class="w-full h-11 bg-blue-600 text-white rounded p-2 font-semibold hover:bg-blue-700 active:bg-blue-800 disabled:bg-slate-300 disabled:cursor-not-allowed">
           Pay
         </button>
       </div>
@@ -78,7 +79,7 @@
         <div id="receipt-content" class="bg-slate-50 border rounded p-3 text-sm font-mono whitespace-pre-line"></div>
         <button
           id="new-txn-btn"
-          class="w-full mt-3 bg-green-600 text-white rounded p-2 font-semibold hover:bg-green-700">
+          class="w-full h-11 mt-3 bg-green-600 text-white rounded p-2 font-semibold hover:bg-green-700 active:bg-green-800">
           New Transaction
         </button>
       </div>

@@ -24,6 +24,9 @@ python -m http.server 8000
 
 - **Product catalog** — 6 hard-coded drinks with prices shown in ₱ (peso),
   two decimal places.
+- **Mobile-first responsive layout** — one column on phones, two columns on
+  tablets (`md`), and the three-panel cashier layout on desktops (`lg`), with
+  enlarged touch targets (44px+ buttons, 16px input text) for phones.
 - **Cart management** — one-click add, `+` / `−` quantity buttons
   (minimum quantity is 1), and a Remove button per row. Adding an item that is
   already in the cart increases its quantity rather than duplicating it.
